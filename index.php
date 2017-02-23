@@ -473,7 +473,7 @@ select {text-align-last:center;}
     <link rel="stylesheet" href="jqcloud/dist/jqcloud.min.css">
     <link rel="stylesheet" href="jquery-ui.min.css">
     <script src="jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/datepicker-pt.js"></script>
+    <script type="text/javascript" src="datepicker-pt.js"></script>
     <script src="jquery.scrollTo.min.js"></script>
     
     
