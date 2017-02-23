@@ -2,6 +2,7 @@
 Código para a Rádio Parlamento - a melhor maneira de consumir parlamento
 http://expressao.xyz/radio/
 
+
 Transcrições do parlamento cortesia de demo.cracia.org
 
 Tradução automática multilingue usando google translate
@@ -17,3 +18,8 @@ Sem leitura em português de portugal, funciona em windows (firefox/chrome, IE/e
 
 
 Questoes ou contactos: https://github.com/fsilva
+
+Releases:
+2017/02/23 - RC1
+
+
