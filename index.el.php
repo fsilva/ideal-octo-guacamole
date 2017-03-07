@@ -12,7 +12,7 @@ RC1  23/02/2017
     
 <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <title>Radio Parlamento</title>
+        <title>Ελληνική Ραδιοφωνία</title>
     
         <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
@@ -20,7 +20,7 @@ RC1  23/02/2017
     
 <style>
 body { background-color: #ffffff; 
-        background-image: url("Parlamento-IPPAR1.jpg");
+        background-image: url("hellenic.jpg");
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-position: center; 
@@ -38,7 +38,7 @@ p { font-family: "Times"; font-style: normal; font-weight: normal; margin: 0; }}
 table, th, td {  margin: 0; border: 1px solid black; text-align:center;}
 table{  width: 95%;  }
 select {text-align-last:center;}
-#footer{ font-family: "verdana";   font-style: normal; font-weight: normal;  font-size: 8px;}
+#footer{ font-family: "verdana";   font-style: normal; font-weight: normal;  font-size: 10px;}
 #afooter { font-family: "verdana"; font-size: 8px;}
 #tradutor {background-color:  rgba(255,255,255,0.75); width: 90%; margin: 20px; border-radius: 10px;}
 #iosbutton {   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);}
@@ -53,7 +53,7 @@ select {text-align-last:center;}
     <!-- create hidden DOM element with all the data from the random assembleia page -->
     <div id="dom-target_PT" style="display: none;">
         <?php
-    
+        
         ini_set('display_errors', 1);
         error_reporting(E_ALL ^ E_NOTICE);
 
@@ -72,21 +72,21 @@ select {text-align-last:center;}
         }
         
         // clamp date to limits
-        if($year > 2014 && $month > 2 && $day > 12)
+        if($year > 2017 && $month > 2 && $day > 03)
         {
-           $year = 2015; $month = 3; $day = 13-1; 
+           $year = 2017; $month = 2; $day = 03-1; 
         }
         
         // clamp date to limits
-        if($year > 2014 && $month > 3)
+        if($year > 2017 && $month > 3)
         {
-           $year = 2015; $month = 3; $day = 13-1; 
+           $year = 2017; $month = 3; $day = 3-1; 
         }
         
-        // clamp date to limits
-        if($year < 1977 && $month < 5)
+        
+        if($year < 2010)
         {
-           $year = 1976; $month = 6; $day = 3-1; 
+           $year = 2010; $month = 01; $day = 11-1; 
         }
         
         // loop until we find an existing session
@@ -98,7 +98,7 @@ select {text-align-last:center;}
             {
                 $day = intval(rand(1,31));
                 $month = intval(rand(1,12));
-                $year = intval(rand(1976, 2015));
+                $year = intval(rand(2013, 2017));
             }else
             {
                 // try next day until we find a valid session
@@ -115,36 +115,17 @@ select {text-align-last:center;}
                 }
             }
 
-            $URL0 = sprintf('http://demo.cratica.org/sessoes/%d/%02d/%02d/', $year, $month, $day );
+            #$URL0 = sprintf('http://demo.cratica.org/sessoes/%d/%02d/%02d/', $year, $month, $day );
             
-            $localBackup = 1; // set to 0 to get data from demo.cratica.org, 1 to use a local backup done 21/02/2017
-            if($localBackup)
-            {
-                $URLlocal = sprintf('backup170221/sessoes/%d/%02d/%02d/index.html', $year, $month, $day );
+               $URLlocal = sprintf('EL/EL_%04d-%02d-%02d.txt', $year, $month, $day );
+                #$URLlocal = sprintf('backup170221/sessoes/%d/%02d/%02d/index.html', $year, $month, $day );
                 
-                echo $URLlocal;
+                #echo $URLlocal;
                 if(file_exists($URLlocal) == 1)
                     $valid_session = 1;
                 
                 $URLfinal = $URLlocal;
-            }else
-            {
-                $s = curl_init(); 
-                curl_setopt($s,CURLOPT_URL,$URLlocal); 
-
-                curl_setopt( $s, CURLOPT_RETURNTRANSFER, true );
-                curl_setopt( $s, CURLOPT_CUSTOMREQUEST, 'HEAD' );
-                curl_setopt( $s, CURLOPT_HEADER, 1 );
-                curl_setopt( $s, CURLOPT_NOBODY, true );
-
-                $result = curl_exec($s); 
-                $httpCode = curl_getinfo($s, CURLINFO_HTTP_CODE);
-                if($httpCode != 404)  //dumb
-                    $valid_session = 1;
-                $URLfinal = $URL0;
-
-                curl_close($s);
-            }
+            
             
             if($count > 100)
                 return;
@@ -152,57 +133,28 @@ select {text-align-last:center;}
             
         }while($valid_session == 0);
         
-        echo sprintf('<p>%s</p>',$URL0); //first <p> is demo.cracia.org link
+        //echo sprintf('<p>%s</p>',$URLlocal); //first <p> is demo.cracia.org link
         
-        if($localBackup == 0)
-        {
-            $s = curl_init(); 
-            curl_setopt($s,CURLOPT_URL,$URLfinal); 
-            curl_setopt($s, CURLOPT_HEADER, 0 );
-            curl_setopt($s, CURLOPT_RETURNTRANSFER, true);
-            $result = curl_exec($s); 
-            curl_close($s);
-        }else
-        {
-            $result = file_get_contents($URLfinal);
-        }
+        
+        $result = file_get_contents($URLfinal);
+        $result = mb_convert_encoding($result, "UTF-8");
+        
+        $str = strtok($result, "\n");
+        echo(sprintf('<p>%s</p>',$str));
+        
+        echo(sprintf('<p>%04d-%02d-%02d</p>',$year, $month, $day ));
 
         //preprocess data a bit, restructure <p>'s
         // remove newlines
-        $result = str_replace(array("\n", "\r"), '', $result);
-        // 1) replace 'Sr.ª' to 'Senhora '
-        $result = str_ireplace('Sr.ª','Senhora ',$result);
-        $result = str_ireplace('Sra.','Senhora ',$result);
-        // 1) replace 'Sr.as' to 'Senhoras '
-        $result = str_ireplace('Sr.as','Senhoras ',$result);
-        // 2) replace 'Sr.' to 'Senhor '
-        $result = str_ireplace('Sr.','Senhor ',$result);
-        // 3) replace 'Srs.' to 'Senhores '
-        $result = str_ireplace('Srs.','Senhores ',$result);
-        // 4) replace 'n.º' to 'numero '
-        $result = str_ireplace('n.º','numero ',$result);
-        // 5) replace 'n.' to 'numero '
-        $result = str_ireplace('n.','numero ',$result);
-        // 6) replace 'S.' to 'São '
-        //$result = str_ireplace('S.','São ',$result);  //would change normas. to normaSão.
-        // 7) replace 'V.Exª' to 'Vossa Excelencia '
-        $result = str_ireplace('V.Exª','Vossa Excelência ',$result);
-        $result = str_ireplace('V. Exª','Vossa Excelência ',$result);
-        $result = str_ireplace('V.','Vossa',$result);
-        // 7) replace 'Exª' to 'Excelencia '
-        $result = str_ireplace('Exª','Excelência',$result);
-        $result = str_ireplace('Ex.ª','Excelência',$result);
-        $result = str_ireplace('Ex.as','Excelências',$result);
-        $result = str_ireplace('Ex.a','Excelência',$result);
-        $result = str_ireplace('Exa.','Excelência',$result);
-        // 7) replace 'Ex.mo' to 'Excelentissímo '
-        $result = str_ireplace('Ex.mo','Excelentissimo',$result);
-        $result = str_ireplace('Dr.','Doutor',$result);
-        $result = str_ireplace('Dra.','Doutora',$result);
-        $result = str_ireplace('Dr.a','Doutora',$result);
-        // 8) if paragraph ends with a '-', remove paragraph tags and join the two para-
-        // graphs.
-        $result = str_ireplace('-</p><p>','',$result);
+        $result = str_replace("\r", '', $result);
+        $result = str_replace("\n\n\n\n", '\n', $result);
+        $result = str_replace("\n\n\n", '\n', $result);
+        $result = str_replace("\n\n", '\n', $result);
+        $result = str_replace("\n\n", '\n', $result);
+        $result = str_replace(array("\n", "\r"), '</p><p>', $result);
+        
+        
+        $result = str_replace(".", '.</p><p>', $result);
         
         // 9) remove intermediate paragraph tags
         $result = str_ireplace('</p><p>',' ',$result);
@@ -216,80 +168,48 @@ select {text-align-last:center;}
         
         // Process DOM, find appropriate element
         $output = 0;
-        $doc = new DOMDocument();
-        $doc->loadHTML($result);
-        
-        $nodes = array();
-        $nodes = $doc->getElementsByTagName("div");
-        foreach ($nodes as $element)
-        {
-            $classy = $element->getAttribute("class");
-            if (strcmp($classy, "entry-content") == 0)
-            {
                 
-                echo $doc->saveHTML($element); // output only the element whose class is "entry-content"
+                echo $result; // output only the element whose class is "entry-content"
                 
                 // Count words for wordcloud
-                $text = (strip_tags(nl2br($element->textContent)));
+                $text = (strip_tags(nl2br($result)));
                 // Remove punctuation and some obvious words
                 $text = str_ireplace(':', '',$text);
                 $text = str_ireplace(',', '',$text);
                 $text = str_ireplace('.', '',$text);
                 $text = str_ireplace('!', '',$text);
                 $text = str_ireplace('?', '',$text);
-                $text = str_ireplace('senhor', '',$text);
-                $text = str_ireplace('senhores', '',$text);
-                $text = str_ireplace('presidente', '',$text);
-                $text = str_ireplace('senhora', '',$text);
-                $text = str_ireplace('governo', '',$text);
-                $text = str_ireplace('porque', '',$text);
-                $text = str_ireplace('palavra', '',$text);
-                $text = str_ireplace('muito', '',$text);
-                $text = str_ireplace('quando', '',$text);
-                $text = str_ireplace('dizer', '',$text);
-                $text = str_ireplace('orador', '',$text);
-                $text = str_ireplace('numero', '',$text);
-                $text = str_ireplace('maria', '',$text);
-                $text = str_ireplace('deputada', '',$text);
-                $text = str_ireplace('deputado', '',$text);
-                $text = str_ireplace('deputados', '',$text);
-                $text = str_ireplace('ministro', '',$text);
-                $text = str_ireplace('está', '',$text);
-                $text = str_ireplace('tambem', '',$text);
-                $text = str_ireplace('também', '',$text);
-                $text = str_ireplace('mesmo', '',$text);
-                $text = str_ireplace('disse', '',$text);
-                $text = str_ireplace('assim', '',$text);
-                $text = str_ireplace('neste', '',$text);
-                $text = str_ireplace('fazer', '',$text);
-                $text = str_ireplace('todos', '',$text);
-                $text = str_ireplace('foram', '',$text);
-                $text = str_ireplace('desta', '',$text);
-                $text = str_ireplace('estão', '',$text);
-                $text = str_ireplace('sobre', '',$text);
-                $text = str_ireplace('ainda', '',$text);
-                $text = str_ireplace('josé', '',$text);
-                $text = str_ireplace('joão', '',$text);
-                $text = str_ireplace('pedro', '',$text);
-                $text = str_ireplace('manuel', '',$text);
-                $text = str_ireplace('sousa', '',$text);
-                $text = str_ireplace('carlos', '',$text);
-                $text = str_ireplace('antónio', '',$text);
-                $text = str_ireplace('jorge', '',$text);
-                $text = str_ireplace('morgado', '',$text);
-                $text = str_ireplace('filipe', '',$text);
-                $text = str_ireplace('luís', '',$text);
-                $text = str_ireplace('silva', '',$text);
-                $text = str_ireplace('assembleia da república', '',$text);
-                
-                $text = str_ireplace('Bloco de Esquerda','BlocoDeEsquerda',$text);
-                $text = str_ireplace('BE ','BlocoDeEsquerda ',$text);
-                $text = str_ireplace('BE:','BlocoDeEsquerda ',$text);
-                $text = str_ireplace('(BE)',' BlocoDeEsquerda ',$text);
-                $text = str_ireplace('Partido Socialista','PS',$text);
-                $text = str_ireplace('Partido Social Democrata','PSD',$text);
-                $text = str_ireplace('Partido Comunista','PCP',$text);
-                $text = str_ireplace('União Europeia','UniãoEuropeia',$text);
+                $text = str_ireplace('nicht', '',$text);
+                $text = str_ireplace('beifall', '',$text);
+                $text = str_ireplace('haben', '',$text);
+                $text = str_ireplace('dieser', '',$text);
+                $text = str_ireplace('diese', '',$text);
+                $text = str_ireplace('diesem', '',$text);
+                $text = str_ireplace('einen', '',$text);
+                $text = str_ireplace('einem', '',$text);
+                $text = str_ireplace('schon', '',$text);
+                $text = str_ireplace('einer', '',$text);
+                $text = str_ireplace('anderen', '',$text);
+                $text = str_ireplace('deutschland', '',$text);
+                $text = str_ireplace('keine', '',$text);
+                $text = str_ireplace('werden', '',$text);
+                $text = str_ireplace('herren', '',$text);
+                $text = str_ireplace('damen', '',$text);
+                $text = str_ireplace('allen', '',$text);
+                $text = str_ireplace('sondern', '',$text);
+                $text = str_ireplace('jetzt', '',$text);
+                $text = str_ireplace('wollen', '',$text);
+                $text = str_ireplace('damit', '',$text);
+                $text = str_ireplace('fragen', '',$text);
+                $text = str_ireplace('frage', '',$text);
+                $text = str_ireplace('antwort', '',$text);
+                $text = str_ireplace('sident', '',$text);
+                $text = str_ireplace('sowie', '',$text);
+                $text = str_ireplace('sowie', '',$text);
+                $text = str_ireplace('immer', '',$text);
+                $text = str_ireplace('ihnen', '',$text);
+                $text = str_ireplace('sagen', '',$text);
+                $text = str_ireplace('einmal', '',$text);
                 
                 $words = array_count_values(str_word_count($text, 1, 'çáéíóúàèìòùãõñâêîôû'));
                 arsort($words);
@@ -298,7 +218,7 @@ select {text-align-last:center;}
                 // only consider words with 5 or more letters, except for party names
                 echo '<table id="wordcloud">';
                 foreach($words as $word => $count):
-                    if(($count > 25 && strlen($word)>4) || (strcmp($word, 'PSD') == 0 || strcmp($word, 'PS') == 0 || strcmp($word, 'PCP') == 0))
+                    if($count > 25 && strlen($word)>4)
                     {
                             echo '<tr><td>';
                             echo ucfirst($word);
@@ -309,9 +229,9 @@ select {text-align-last:center;}
                 endforeach;
                 echo '</table>';       
                 
-            }
+            
 
-        }
+        
         
 
         ?>
@@ -321,12 +241,24 @@ select {text-align-last:center;}
     
     <center id="maindiv" style='display: none;'>
     <div id="backdiv" >
+        
+        
+        
     <br>
-    <h1 id="titulo">Rádio Parlamento</h1>
+        <div style='font-size:40px; font-family: helvetica, sans-serif;' id="titulo">
+            <table>
+                <td>
+                <tr> <img height=40px src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg"> </tr>
+                <tr> Ελληνική Ραδιοφωνία </tr>
+                <tr> <img height=40px src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Greece.svg"> </tr>
+                </td>
+            </table>
+        </div>
+        
     <br>
-    <h2 style="margin: 0;" id="data"></h2>
-        <a href="." style="margin: 0; font-size: 10px; text-decoration: underline;">Sessão aleatória</a>
-        <a id="escolherData" style="margin: 0; margin-left: 8em; font-size: 10px; text-decoration: underline;">Escolher Sessão</a>
+    <h2 style="margin: 0; font-size:30px" id="data"></h2>
+        <a href="./index.el.php" style="margin: 0; font-size: 14px; text-decoration: underline;">τυχαία ημερομηνία</a>
+        <a id="escolherData" style="margin: 0; margin-left: 1em; font-size: 14px; text-decoration: underline;">επιλέξτε μια ημερομηνία</a>
     
         <br>
         <div id="escolherData_div" style="display:none;">
@@ -335,7 +267,7 @@ select {text-align-last:center;}
         <table style="margin-top: 50px;">
             <tr>
                 <td><center><img src="microphone-1295666_960_720.png" width="48px" onclick="setPT()" id="micPT"></center></td>
-                <td><center><div id="deixaPT" onclick="setPT()" style="margin: 5px; overflow-y: scroll; height: 18em; border:  1px solid lightgray; border-radius: 10px;"></div></center></td>
+                <td><center><div id="deixaPT" onclick="setPT()" style="margin: 5px; overflow-y: scroll; height: 18em; border:  1px solid lightgray; border-radius: 10px; max-width: 95%;"></div></center></td>
             </tr>
 
         </table>
@@ -344,33 +276,34 @@ select {text-align-last:center;}
         
         <div id="tradutor" style="margin-top: 50px; ">
         
-        <h4 style="margin: 0; font-weight: bold; font-size: 24px;">Tradutor</h4>
+        <h4 style="margin: 0; font-weight: bold; font-size: 24px;">μεταφραστής</h4>
             <select id="lang" onclick="setTimeout(setEN,2500)" style="margin: 0;">
-                  <option value="ar;Arabic Female">عربى/Árabe</option>
-                  <option value="zh-TW;Chinese Female">中文/Chinês</option>
-                  <option value="ko;Korean Female">한국어/Coreano</option>
-                  <option value="cs;Czech Female">čeština/Checo</option>
+                  <option value="ar;Arabic Female">عربى/αραβικός</option>
+                  <option value="zh-TW;Chinese Female">中文/κινέζικα</option>
+                  <option value="ko;Korean Female">한국어/Κορέας</option>
+                  <option value="cs;Czech Female">čeština/Τσέχος</option>
                   <option value="de;Deutsch Female">Deutsch</option>
-                  <option value="da;Danish Female">Dansk/Dinamarquês</option>
+                  <option value="da;Danish Female">Dansk/Δανός</option>
                   <option selected="selected" value="en;UK English Female">English</option>
                   <option value="es;Spanish Female">Español</option>
-                  <option value="el;Greek Female">Ελληνικά/Grego</option>
+                  <option value="el;Greek Female">Ελληνικά/Griechisch</option>
                   <option value="fr;French Female">Français</option>
-                  <option value="hi;Hindi Female">हिंदी/Hindi</option>
-                  <option value="hu;Hungarian Female">Magyar/Húngaro</option>
+                  <option value="hi;Hindi Female">हिंदी/Χίντι</option>
+                  <option value="hu;Hungarian Female">Magyar/Ούγγρος</option>
                   <option value="it;Italian Female">Italiano</option>
-                  <option value="ja;Japanese Female">日本語/Japonês</option>
-                  <option value="la;Latin Female">Latim</option> <!-- Latin crashes some browsers -->
+                  <option value="ja;Japanese Female">日本語/Ιαπωνικά</option>
+                  <!-- <option value="la;Latin Female">Latim</option> <!-- Latin crashes some browsers -->
                   <option value="nl;Dutch Female">Nederlands</option>
-                  <option value="pl;Polish Female">Polskie/Polaco</option>
+                  <option value="pl;Polish Female">Polskie/Πολωνός</option>
+                  <option value="pt;Portuguese Female">Português</option>
                   <option value="pt-BR;Brazilian Portuguese Female">PT Brasileiro</option>
-                  <option value="ro;Romanian Male">Română/Romêno</option>
-                  <option value="ru;Russian Female">русский/Russo</option>
-                  <option value="sv;Swedish Female">Svenska/Suéco</option>
-                  <option value="fi;Finnish Female">Suomi/Finlandês</option>
-                  <option value="no;Norwegian Female">Norsk/Norueguês</option>
-                  <option value="tr;Turkish Female">Türk/Turco</option>
-                  <option value="th;Thai Female">ไทย/Tailandês</option>
+                  <option value="ro;Romanian Male">Română/ρουμανικός</option>
+                  <option value="ru;Russian Female">русский/ρωσικός</option>
+                  <option value="sv;Swedish Female">Svenska/σουηδικά</option>
+                  <option value="fi;Finnish Female">Suomi/φινλανδικός</option>
+                  <option value="no;Norwegian Female">Norsk/Νορβηγός</option>
+                  <option value="tr;Turkish Female">Türk/τουρκική</option>
+                  <option value="th;Thai Female">ไทย/Ταϊλάνδης</option>
                 </select>
             
         <table>
@@ -392,37 +325,37 @@ select {text-align-last:center;}
         <center>
         <img src="Mute_Icon.svg" width="48px" onclick="muteToggle()" id="mute"></center>
         
-        <a id="linkDemocracia" href="http://demo.cratica.org" style="margin: 20px;">Sessão Completa</a>
+        <a id="linkDemocracia" href="http://demo.cratica.org" style="margin: 20px;">Ακολουθεί το πλήρες κείμενο</a> 
         <br> <br>
-        <button onclick="music1()">Musica de fundo 1</button>
+        <!-- <button onclick="music1()">Musica de fundo 1</button>
         
-        <button onclick="music2()">Musica de fundo 2</button>
+        <button onclick="music2()">Musica de fundo 2</button>-->
         
         <!-- <button onclick="music3()">Musica de fundo 3</button>-->
         <br>
         <iframe src="" frameborder="0" scrolling="no" id="myFrame" style="display: none;"></iframe>
         
-        <h5>Nesta sessão:</h5>
+       <!-- <h5>Σε αυτή την ενότητα:</h5>
         <div id="wordcloud2" style="display: block;  
         width: 500px;
-        height: 200px; margin: 0;"></div>
+        height: 200px; margin: 0;"></div>-->
         
         <div style="max-width:400px; margin-top: 50px;">
             
+           
             
-            <div id="footer">Transcrições do parlamento cortesia de <a id="afooter" href="http://demo.cracia.org">demo.cracia.org</a></div>
-            <div id="footer">Tradução automática multilingue usando <a id="afooter" href="https://translate.google.com/">google translate</a></div>
-            <div id="footer">Leitura automática multilingue usando <a id="afooter" href="https://responsivevoice.org/">responsivevoice.js</a></div>
-            <div id="footer">Tag cloud gerada com <a id="afooter" href="https://http://mistic100.github.io/jQCloud/">jQCloud.js</a></div>
-            <div id="footer">Imagem de fundo CC3 cortesia <a id="afooter" href="https://pt.wikipedia.org/wiki/Assembleia_da_Rep%C3%BAblica#/media/File:Parlamento-IPPAR1.jpg">IPPAR e wikipedia</a></div>
-            <div id="footer">Funciona melhor em mac & iOS, pois têm muito melhores vozes TTS pt-tuga.</div>
+            <div id="footer">Ελληνική μεταγραφές κοινοβούλιο προέρχονται από  <a id="afooter" href="http://www.hellenicparliament.gr/">hellenicparliament.gr</a></div>
+            <div id="footer">Πολύγλωσσο Αυτόματη μετάφραση με<a id="afooter" href="https://translate.google.com/">google translate</a></div>
+            <div id="footer">Πολύγλωσσο αυτόματη ανάγνωση με <a id="afooter" href="https://responsivevoice.org/">responsivevoice.js</a></div>
+            
+            <div id="footer">CC2 Χορηγία εικόνας φόντου της  <a id="afooter" href="https://commons.wikimedia.org/wiki/File:Hellenic_Parliament-MPs_swearing_in.png">ΠΑΣΟΚ und wikipedia</a></div>
+            <div id="footer">Λειτουργεί καλύτερα σε Mac και iOS, έχουν πολύ καλύτερη TTS φωνές.</div>
             <!-- <div id="footer">Produção <a id="afooter" href="expressao.xyz">expressao.xyz</a></div> -->
-            <div id="footer">Código fonte disponível no <a id="afooter" href="https://github.com/fsilva/radio-parlamento">GitHub</a></div> 
+            <div id="footer">πάρετε τον πηγαίο κώδικα σε <a id="afooter" href="https://github.com/fsilva/radio-parlamento">GitHub</a></div> 
             <br>
-            <button style="font-size: 12px" onclick=" $('#BRvoice').show();$('#maindiv').hide();">Mudar linguagem de leitura de texto português.</button>
+            <button style="font-size: 12px" onclick=" $('#BRvoice').show();$('#maindiv').hide();">Διαβάστε Αλλαγή ελληνική γλώσσα κειμένου.</button>
             
         </div>
-        
         <br/>
          <div style='align:center;'><a href="./index.php"> <img height=20px src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" href="https://commons.wikimedia.org/wiki/File:Flag_of_Portugal.svg">Radio Parlamento</a><img height=20px src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg" href="https://commons.wikimedia.org/wiki/File:Flag_of_Portugal.svg"></div>
         <br/>
@@ -436,7 +369,7 @@ select {text-align-last:center;}
         
     </div></center>
     
-    <form method="get" id="dateForm" action="index.php">
+    <form method="get" id="dateForm" action="index.de.php">
         <input type="hidden" id="y" name="y" value="">
         <input type="hidden" id="m" name="m" value="">
         <input type="hidden" id="d" name="d" value="">
@@ -444,25 +377,16 @@ select {text-align-last:center;}
         
     <div id='bigplaybutton' style='display: none;'><img src="play.png" id='iosbutton' width="50%" onclick="iOSbuttonClick()"><p>Play</p></div>
     
-    <div id='novoice' style='display: none;text-align:center;'><div style="margin:10px; center:"><h2>:( O seu computador não suporta leitura automática (Text-To-Speech) :( </h2> 
-        
-        <h6>E os nossos deputados não se vão pronunciar nestas condições! Reveja o seu orçamento de estado, Senhor Primeiro Ministro! <i>Aplausos</i></h6>
-        <br>
-        <h3>Sugerimos que experimente a Rádio Parlamento num computador com macOS ou iOS (português de Portugal) ou com Windows ou Android (português do Brasil). </h3>
-        <h5> Web-browsers não suportados: Internet Explorer/Microsoft Edge</h5>
-        </div></div>
     
-    <div id='BRvoice' style='display: none;text-align:center;'><div style="margin:10px; center:"><h2>O seu computador não suporta Português de Portugal. </h2> 
+    <div id='BRvoice' style='display: none;text-align:center;'><div style="margin:10px; center:"><h2></h2> 
         
-        <h4>Sugerimos que experimente a Rádio Parlamento num computador com macOS 10.10, iOS. </h4>
-        <h5> Web-browsers não suportados: Internet Explorer/Microsoft Edge</h5>
         
-        <h2> Ou escolha uma voz para ler texto Português:</h2>
-        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Brazilian Portuguese Female")'> Português do Brasil </button> <p></p>
-        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Spanish Female")'> Espanhol </button><p></p>
-        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Italian Female")'> Italiano </button><p></p>
-        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("French Female")'> Francês </button><p></p>
-        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("UK English Female")'> Inglês </button><p></p>
+        <h2>Επιλέξτε να διαβάσει το κείμενο στη γερμανική γλώσσα μια φωνή:</h2>
+        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Dutch Female")'> Dutch </button> <p></p>
+        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Swedish Female")'> Swedish </button><p></p>
+        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Italian Female")'> Italian </button><p></p>
+        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("French Female")'> Franch </button><p></p>
+        <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("UK English Female")'> English </button><p></p>
         <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Korean Female")'> Coreano </button><p></p>
         <button style="font-size:20px; width:50%; margin: 5px;" onclick='init("Hindi Female")'> Hindu </button>
         <p></p>
@@ -486,16 +410,15 @@ select {text-align-last:center;}
     <script type="text/javascript" src="datepicker-pt.js"></script>
     <script src="jquery.scrollTo.min.js"></script>
     
-    
     <script type="text/javascript">
         
         //execution starts here
         
-        var language = 'pt';
+        var language = 'el';
         var mute = 0;
         var words = [];
         var items = [];
-        var tts_language = 'Portuguese Female';
+        var tts_language = 'Greek Female';
         
         
         
@@ -526,7 +449,7 @@ select {text-align-last:center;}
         // if all is fine (which currently only happens in macOS >10.10 & iOS), then proceed with init
         function preinit()
         {
-            if(responsiveVoice.voiceSupport() == 0)// || window.speechSynthesis.getVoices() == 0)
+            /*if(responsiveVoice.voiceSupport() == 0)// || window.speechSynthesis.getVoices() == 0)
             {
                 // no voice, show error
                 $('#novoice').show();
@@ -536,24 +459,25 @@ select {text-align-last:center;}
                 // no voice, show error
                 $('#BRvoice').show();
                 $('#maindiv').hide();
-            }else
-                init('Portuguese Female');
+            }else*/
+                init('Greek Female');
         }
         
         // Update interface with data from server and start the dictation process
         function    init(dictation_language)
         {
             // make sure maindiv is shown and not the BRmessage
-            $('#BRvoice').hide();
-            $('#maindiv').show();
+            //$('#BRvoice').hide();
+            //$('#maindiv').show();
             tts_language = dictation_language;
+            
             
             // Setup datepicker to choose parlament sessions
             $( "#escolherData" ).bind( "click", function(){$('#escolherData_div').toggle(duration=500);});
             $.datepicker.setDefaults($.datepicker.regional["pt"]);
-            var start = new Date("1977-01-01");
-            var end = new Date("2014-01-01");
-            $('#escolherData_div').datepicker({yearRange: "1976:2015", dateFormat: 'yy-mm-dd', changeYear: true, changeMonth: true, onSelect: function () {dateSelected();}});
+            var start = new Date("2010-01-11");
+            var end = new Date("2017-03-03");
+            $('#escolherData_div').datepicker({yearRange: "2010:2017", dateFormat: 'yy-mm-dd', changeYear: true, changeMonth: true, onSelect: function () {dateSelected();}});
             $('#escolherData_div').datepicker("setDate", 
                                                 new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())));
 
@@ -569,35 +493,40 @@ select {text-align-last:center;}
             $('#linkDemocracia').attr('href',urlOriginal);
 
             // Find date string in second <p> using regex. parlament data is regular enough that this always seems to work fine
-            date = items[1].textContent.toLowerCase();
+            /*date = items[1].textContent.toLowerCase();
             seleccionado = date.match(/(segunda-feira|terça-feira|quarta-feira|quinta-feira|sexta-feira|sábado).*?\d\d\d\d/);
             seleccionado = seleccionado[0].charAt(0).toUpperCase() + seleccionado[0].slice(1);
             mes = seleccionado.match(/(janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)/);
             k = mes['index'];
-            seleccionado = seleccionado.slice(0,k) + seleccionado[k].toUpperCase() + seleccionado.slice(k+1);
+            seleccionado = seleccionado.slice(0,k) + seleccionado[k].toUpperCase() + seleccionado.slice(k+1);*/
+            date = items[1].textContent;
 
-            $('#data').text("Sessão: "+seleccionado);
+            $('#data').text("Ημερομηνία συνεδρίας: "+date);
             
             // Insert lines in the #deixaPT scrollable element for display, clicking. Generate links such that people can refer back to a certain line
-            splitted = urlOriginal.split('/').reverse();
-            year = splitted[3];
-            month = splitted[2];
-            day = splitted[1];
+            //splitted = urlOriginal.split('/').reverse();
+            splitted = date.split('-');
+            year = splitted[0];
+            month = splitted[1];
+            day = splitted[2];
             
             //add all values to deixaPT as divs
             for(u = 0;u < items.length;u++)
             {
                 var item = items[u];
-                linkstr = './index.php?y='+year+
+                linkstr = './index.el.php?y='+year+
                                                                 '&m='+month+
                                                                 '&d='+day+
                                                                 '&l='+u.toString();
                 
                 $('#deixaPT').append('<h3 style="font-size:12px;margin:5px;" onclick="scrollToElement(this);" id="h3_' + u.toString() + '">'+item.textContent+'   <a href="'+linkstr+'"><img style="filter:grayscale(100%); display: inline; opacity: 0.3;" src="Sharethis.svg" width=14px"></a></h3>--');
+                
+                
+                //$('#deixaPT').append('<h3 style="font-size:12px;margin:5px;" onclick="scrollToElement(this);" id="h3_' + u.toString() + '">'+item.textContent+'</h3>--');
             }
             
             // Create the wordcloud with the data in the #wordcloud hidden element, generated server side by php
-            words = [];
+          /*  words = [];
             $('#wordcloud').children().children().toArray().forEach(
                 function(currentVal, index, array)
                 {
@@ -606,10 +535,11 @@ select {text-align-last:center;}
 
                 });
             $('#wordcloud2').jQCloud(words,{colors: ["#bd0026", "#e31a1c", "#fc4e2a", "#fd8d3c", "#feb24c"]});
+            */
             
             // Start talking
             ndeixas = items.length;
-            language = 'pt';
+            language = 'el';
             mute = 1;
             setPT();
             muteOff();
@@ -640,6 +570,7 @@ select {text-align-last:center;}
             // Get PT data
             var textPT = items[ii].textContent;
             
+   
             // Translate PT data to selected language
             var split = $('#lang').val().split(';');
             var lang = split[0];
@@ -660,7 +591,7 @@ select {text-align-last:center;}
             }
             $('#deixaEN').text(textENparsed);*/
             
-            var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl="+lang+"&dt=t&q=" +encodeURI(textPT);
+            var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl="+lang+"&dt=t&q=" +encodeURI(textPT);
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open( "GET", url, true ); // true for asynchronous request
             var language_buffer = language;
@@ -678,7 +609,7 @@ select {text-align-last:center;}
                                         }
                                         $('#deixaEN').text(textENparsed).attr('style','font-style: normal;');
                                         
-                                        if(language_buffer != 'pt')
+                                        if(language_buffer != 'el')
                                             responsiveVoice.speak(textENparsed,voice,{volume:vol, pitch:1,onend:callback});  
                                     } else 
                                     {
@@ -703,8 +634,9 @@ select {text-align-last:center;}
                 responsiveVoice.speak(textENparsed,voice,{volume:vol, pitch:1,onend:callback});  */
             
             //code for asyncronous request 
-            if(language == 'pt')
-                responsiveVoice.speak(items[ii].textContent,tts_language,{volume:vol, rate:1.0, pitch:0.5,onend:callback});
+            if(language == 'el')
+                responsiveVoice.speak(items[ii].textContent,tts_language,{volume:vol, rate:1.0, pitch:1,onend:callback});
+                //responsiveVoice.speak(greeklish,tts_language,{volume:vol, rate:1.0, pitch:1,onend:callback});
             
             
             // Update interface to highlight current line in PT
@@ -731,6 +663,7 @@ select {text-align-last:center;}
         // returns true if there are good quality pt-pt voices supported by responsivevoice.js
         function isTherePTPTVoice()
         {
+            return true;
             var v = window.speechSynthesis.getVoices();
             var flag= 0 ;
             v.forEach(function(v) 
@@ -750,7 +683,7 @@ select {text-align-last:center;}
         // start PT dictation
         function setPT() 
         {
-            language='pt';
+            language='el';
             $("#micPT").css("opacity", 1);
             $("#micEstrangeiro").css("opacity", 0.2);
             mute = 0; 
@@ -798,7 +731,7 @@ select {text-align-last:center;}
             mute = 0; 
             responsiveVoice.setVolume(1);
             $("#mute").css("opacity", 0.2);
-            if(language == 'pt')
+            if(language == 'el')
                 setPT();
             else setEN();
         };
@@ -849,7 +782,7 @@ select {text-align-last:center;}
                         });
             console.log(totrans);
             
-            var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl="+lang+"&dt=t&q=" +encodeURI(totrans);
+            var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=el&tl="+lang+"&dt=t&q=" +encodeURI(totrans);
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open( "GET", url, false ); // false for synchronous request
             xmlHttp.send( null );
